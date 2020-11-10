@@ -1,0 +1,95 @@
+﻿@model ShoppingCart.Web.ViewModels.ShoppingCartVm
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<h1>Shopping Cart</h1>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Cost</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var cartItem in Model.CartItems)
+        {
+        <tr>
+            <td>@cartItem.Name</td>
+            <td>@cartItem.Cost</td>           
+            <td>
+                @*<button class="btn btn-sm btn-danger">
+                    Remove
+                </button>*@
+                <button id="btn_delete" class="btn btn-sm btn-danger" data-slno="@cartItem.Id" onclick="location.href='@Url.Action("RemoveItem", "ShoppingCart", @cartItem)'">
+                    Remove
+                </button>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<div class="form-inline">
+    <div class="form-group">
+        <label for="discountCode">Discount Code</label>
+        <input id="discountCode"
+               type="text"
+               class="form-control">
+    </div>
+
+    <button type="button"
+            class="btn btn-primary"
+            data-applyDiscountCode>
+        Apply Discount Code
+    </button>
+</div>
+
+<div class="form-group">
+    <label for="totalcost">Total Cost:</label>
+    <strong id="totalCost">
+        <span id="custonId">
+            @Model.TotalCost
+        </span>       
+    </strong>
+</div>
+
+@section Scripts {
+    <script>
+        $(function() {
+            $("button[data-applyDiscountCode]").on("click", function() {
+
+                var discountCode = $("#discountCode").val();
+                var Tcost = @Model.TotalCost;
+               
+                    $.ajax({
+                        url: '/ShoppingCart/CheckDiscountCode',
+                        data: { "code": discountCode,"Tcost" : Tcost },
+                        "type": "POST",
+                        cache: false,
+                        dataType: JSON,
+                        success: function (result) {
+                            var res = jQuery.parseJSON(result.responseText);
+                            $("#discountCode").val('');
+                            if (res.valid) {
+                                $("#custonId").text(res.totalCost);
+                            }
+                        },
+                        error: function (result) {
+                           
+                            console.log(result.responseText);
+                            
+                        }
+                    });
+                    return false;
+               
+
+                // TODO: Apply discount code.
+                
+            });            
+        });
+    </script>
+}

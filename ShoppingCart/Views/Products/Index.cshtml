@@ -1,0 +1,26 @@
+﻿@model List<ShoppingCart.Web.ViewModels.ProductVm>
+@{
+    ViewData["Title"] = "Products";
+}
+
+<h1>Products</h1>
+
+<section>
+    @foreach (var product in Model)
+    {
+    <article>
+        <header class="h4">
+            @product.Name        
+        </header>
+        <form asp-action="AddToCart" asp-controller="ShoppingCart" method="post">
+            <input type="hidden" name="productId" value="@product.Id" />
+            <span>@product.Cost.ToString("c") </span>
+            <input type="submit" class="btn btn-primary" name="AddToCart" value="Add To Cart" aria-labelledby="submit.add-to-cart-announce" />
+            <span id="submit.add-to-cart-announce" class="hidden">Add to Cart</span>
+            <input type="submit" class="btn btn-primary" name="Delete" value="Delete" aria-labelledby="delete-cart-announce" />
+            <span id="submit.delete-cart-announce" class="hidden">Delete</span>
+        </form>
+        
+    </article>
+    }
+</section>
